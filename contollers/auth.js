@@ -1,4 +1,7 @@
-import { validateSignUpSchema } from "../utils/validators/authValidator";
+import {
+  validateSignUpSchema,
+  validateLoginSchema,
+} from "../utils/validators/authValidator";
 import User from "../models/User";
 
 export const signUpUser = async (req, res) => {
@@ -38,7 +41,7 @@ export const signUpUser = async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "User created successfully",
       data: {
@@ -52,8 +55,67 @@ export const signUpUser = async (req, res) => {
     });
   } catch (error) {
     console.error("Signup error:", error);
-    res
+    return res
       .status(500)
       .json({ success: false, message: "Server error during signup" });
+  }
+};
+
+export const loginUser = async (req, res) => {
+  try {
+    // Validate input using Joi
+    const { error, value } = validateLoginSchema.validate(req.body, {
+      abortEarly: false,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: error.details.map((err) => ({
+          field: err.path[0],
+          message: err.message,
+        })),
+      });
+    }
+
+    const { email, password } = value;
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials" });
+    }
+
+    // Check password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials" });
+    }
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    return res.json({
+      success: true,
+      message: "Login successful",
+      data: {
+        token,
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error during login" });
   }
 };
