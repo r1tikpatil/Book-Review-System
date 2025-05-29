@@ -2,6 +2,12 @@
 
 A RESTful API built with Node.js and Express for managing book reviews with JWT authentication.
 
+## 🧪 Postman Collection
+
+You can test the API using Postman collection:
+
+[Download Postman Collection](https://drive.google.com/uc?export=download&id=1Dno7iGvWTsKc31Y6c6lfO6PJiMkCOo5c)
+
 ## 🚀 Features
 
 - **User Authentication**: JWT-based registration and login
@@ -147,6 +153,7 @@ Content-Type: application/json
 
 ```json
 {
+  "success": true,
   "message": "User created successfully",
   "data": {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
