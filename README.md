@@ -148,11 +148,13 @@ Content-Type: application/json
 ```json
 {
   "message": "User created successfully",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "64a1b2c3d4e5f6g7h8i9j0k1",
-    "username": "johndoe",
-    "email": "john@example.com"
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": "64a1b2c3d4e5f6g7h8i9j0k1",
+      "username": "johndoe",
+      "email": "john@example.com"
+    }
   }
 }
 ```
