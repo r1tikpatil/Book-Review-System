@@ -16,8 +16,8 @@ router.post("/", authMiddleware, addNewBook);
 // GET /books - Get all books with pagination and filters
 router.get("/", getAllBooks);
 
-// GET /books/:id - Get book details with reviews
-router.get("/:id", getBookDetail);
+// GET /books/book/:id - Get book details with reviews
+router.get("/book/:id", getBookDetail);
 
 // POST /books/:id/reviews - Submit review (Authenticated)
 router.post("/:id/reviews", authMiddleware, submitReview);

@@ -4,6 +4,7 @@ const {
   bookSchema,
   querySchema,
   reviewQuerySchema,
+  reviewSchema,
 } = require("../utils/validators/bookValidator");
 const { searchQuerySchema } = require("../utils/validators/bookValidator");
 
@@ -231,7 +232,10 @@ exports.searchBooks = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const books = await Book.find({
-      title: { $regex: q, $options: "i" },
+      $or: [
+        { title: { $regex: q, $options: "i" } },
+        { author: { $regex: q, $options: "i" } },
+      ],
     })
       .skip(skip)
       .limit(limit);
