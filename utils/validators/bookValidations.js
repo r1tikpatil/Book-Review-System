@@ -14,6 +14,14 @@ const bookSchema = Joi.object({
   isbn: Joi.string().optional().allow(""),
 });
 
+const querySchema = Joi.object({
+  page: Joi.number().integer().min(1).optional(),
+  limit: Joi.number().integer().min(1).max(100).optional(),
+  author: Joi.string().optional(),
+  genre: Joi.string().optional(),
+});
+
 module.exports = {
   bookSchema,
+  querySchema,
 };
