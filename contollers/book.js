@@ -1,7 +1,9 @@
 const Book = require("../models/Book");
+const Review = require("../models/Review");
 const {
   bookSchema,
   querySchema,
+  reviewQuerySchema,
 } = require("../utils/validators/bookValidations");
 
 exports.addNewBook = async (req, res) => {
@@ -73,7 +75,7 @@ exports.getAllBooks = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "",
+      message: "Books fetched successfully",
       data: {
         books,
         pagination: {
@@ -90,5 +92,124 @@ exports.getAllBooks = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Server error while fetching books" });
+  }
+};
+
+exports.getBookDetail = async (req, res) => {
+  try {
+    const { error } = reviewQuerySchema.validate(req.query);
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        data: error.details,
+      });
+    }
+
+    const book = await Book.findById(req.params.id).populate(
+      "addedBy",
+      "username"
+    );
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+        data: null,
+      });
+    }
+
+    const reviewPage = parseInt(req.query.reviewPage) || 1;
+    const reviewLimit = parseInt(req.query.reviewLimit) || 10;
+    const reviewSkip = (reviewPage - 1) * reviewLimit;
+
+    const reviews = await Review.find({ book: book._id })
+      .populate("user", "username")
+      .sort({ createdAt: -1 })
+      .skip(reviewSkip)
+      .limit(reviewLimit);
+
+    const totalReviews = await Review.countDocuments({ book: book._id });
+    const totalReviewPages = Math.ceil(totalReviews / reviewLimit);
+
+    return res.status(200).json({
+      success: true,
+      message: "Book details fetched successfully",
+      data: {
+        book,
+        reviews,
+        reviewPagination: {
+          currentPage: reviewPage,
+          totalPages: totalReviewPages,
+          totalReviews,
+          hasNext: reviewPage < totalReviewPages,
+          hasPrev: reviewPage > 1,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Get book details error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching book details",
+      data: null,
+    });
+  }
+};
+
+exports.submitReview = async (req, res) => {
+  try {
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        data: error.details,
+      });
+    }
+
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+        data: null,
+      });
+    }
+
+    const existingReview = await Review.findOne({
+      user: req.user._id,
+      book: book._id,
+    });
+
+    if (existingReview) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already reviewed this book",
+        data: null,
+      });
+    }
+
+    const review = new Review({
+      user: req.user._id,
+      book: book._id,
+      rating: req.body.rating,
+      comment: req.body.comment,
+    });
+
+    await review.save();
+    await review.populate("user", "username");
+
+    return res.status(201).json({
+      success: true,
+      message: "Review submitted successfully",
+      data: review,
+    });
+  } catch (error) {
+    console.error("Submit review error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while submitting review",
+      data: null,
+    });
   }
 };

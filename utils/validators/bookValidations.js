@@ -21,7 +21,19 @@ const querySchema = Joi.object({
   genre: Joi.string().optional(),
 });
 
+const reviewSchema = Joi.object({
+  rating: Joi.number().integer().min(1).max(5).required(),
+  comment: Joi.string().max(1000).optional().allow(""),
+});
+
+const reviewQuerySchema = Joi.object({
+  reviewPage: Joi.number().integer().min(1).optional(),
+  reviewLimit: Joi.number().integer().min(1).max(50).optional(),
+});
+
 module.exports = {
   bookSchema,
   querySchema,
+  reviewSchema,
+  reviewQuerySchema,
 };
