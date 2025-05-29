@@ -4,7 +4,7 @@ const {
   bookSchema,
   querySchema,
   reviewQuerySchema,
-} = require("../utils/validators/bookValidations");
+} = require("../utils/validators/bookValidator");
 const { searchQuerySchema } = require("../utils/validators/bookValidator");
 
 exports.addNewBook = async (req, res) => {
