@@ -1,6 +1,6 @@
-import Joi from "joi";
+const Joi = require("joi");
 
-export const validateSignUpSchema = Joi.object({
+exports.validateSignUpSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required().messages({
     "string.base": "Username must be a string",
     "string.empty": "Username is required",
@@ -20,7 +20,7 @@ export const validateSignUpSchema = Joi.object({
   }),
 });
 
-export const validateLoginSchema = Joi.object({
+exports.validateLoginSchema = Joi.object({
   email: Joi.string().email().required().messages({
     "string.email": "Please provide a valid email",
     "string.empty": "Email is required",

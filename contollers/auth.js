@@ -1,10 +1,11 @@
-import {
+const {
   validateSignUpSchema,
   validateLoginSchema,
-} from "../utils/validators/authValidator";
-import User from "../models/User";
+} = require("../utils/validators/authValidator.js");
+const User = require("../models/User");
+const { generateToken } = require("../utils/utils");
 
-export const signUpUser = async (req, res) => {
+exports.signUpUser = async (req, res) => {
   try {
     const { error, value } = validateSignUpSchema.validate(req.body, {
       abortEarly: false,
@@ -61,7 +62,7 @@ export const signUpUser = async (req, res) => {
   }
 };
 
-export const loginUser = async (req, res) => {
+exports.loginUser = async (req, res) => {
   try {
     // Validate input using Joi
     const { error, value } = validateLoginSchema.validate(req.body, {

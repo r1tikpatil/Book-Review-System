@@ -1,6 +1,7 @@
 {
   "name": "book-review-system",
   "version": "1.0.0",
+  "type": "commonjs",
   "description": "RESTful API for book reviews with JWT authentication",
   "main": "server.js",
   "scripts": {
