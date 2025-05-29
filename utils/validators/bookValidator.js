@@ -31,9 +31,19 @@ const reviewQuerySchema = Joi.object({
   reviewLimit: Joi.number().integer().min(1).max(50).optional(),
 });
 
+const searchQuerySchema = Joi.object({
+  q: Joi.string().trim().required().messages({
+    "any.required": "Search query is required",
+    "string.empty": "Search query is required",
+  }),
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(50).default(10),
+});
+
 module.exports = {
   bookSchema,
   querySchema,
   reviewSchema,
   reviewQuerySchema,
+  searchQuerySchema,
 };

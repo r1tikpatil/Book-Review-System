@@ -5,6 +5,7 @@ const {
   getAllBooks,
   getBookDetail,
   submitReview,
+  searchBooks,
 } = require("../contollers/book");
 
 const router = express.Router();
@@ -20,5 +21,8 @@ router.get("/:id", getBookDetail);
 
 // POST /books/:id/reviews - Submit review (Authenticated)
 router.post("/:id/reviews", authMiddleware, submitReview);
+
+// GET /search - Search books by title or author
+router.get("/search", searchBooks);
 
 module.exports = router;

@@ -5,6 +5,7 @@ const {
   querySchema,
   reviewQuerySchema,
 } = require("../utils/validators/bookValidations");
+const { searchQuerySchema } = require("../utils/validators/bookValidator");
 
 exports.addNewBook = async (req, res) => {
   try {
@@ -209,6 +210,54 @@ exports.submitReview = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Server error while submitting review",
+      data: null,
+    });
+  }
+};
+
+exports.searchBooks = async (req, res) => {
+  try {
+    const { error, value } = searchQuerySchema.validate(req.query);
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        data: error.details,
+      });
+    }
+
+    const { q, page, limit } = value;
+
+    const skip = (page - 1) * limit;
+
+    const books = await Book.find({
+      title: { $regex: q, $options: "i" },
+    })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Book.countDocuments({
+      title: { $regex: q, $options: "i" },
+    });
+
+    return res.json({
+      success: true,
+      message: "Books fetched successfully",
+      data: {
+        results: books,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+    });
+  } catch (err) {
+    console.error("Search books error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while searching books",
       data: null,
     });
   }
